@@ -22,3 +22,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# VS Code workspace settings (keep if you have personal settings)
+.vscode/settings.json
+
+# Windows
+Thumbs.db
