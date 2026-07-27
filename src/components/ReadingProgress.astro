@@ -1,0 +1,47 @@
+---
+/**
+ * ReadingProgress — A thin progress bar at the top of the page
+ * that fills as the user scrolls through the article.
+ */
+---
+
+<div class="reading-progress" id="reading-progress">
+	<div class="reading-progress-bar" id="reading-progress-bar"></div>
+</div>
+
+<style>
+	.reading-progress {
+		position: fixed;
+		top: var(--header-height);
+		left: 0;
+		right: 0;
+		height: 2px;
+		background: transparent;
+		z-index: 99;
+	}
+
+	.reading-progress-bar {
+		height: 100%;
+		width: 0%;
+		background: var(--accent);
+		transition: width 50ms linear;
+	}
+</style>
+
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', function () {
+		const bar = document.getElementById('reading-progress-bar');
+		if (!bar) return;
+
+		function updateProgress() {
+			const scrollTop = window.scrollY;
+			const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+			if (docHeight > 0) {
+				bar.style.width = Math.min((scrollTop / docHeight) * 100, 100) + '%';
+			}
+		}
+
+		window.addEventListener('scroll', updateProgress, { passive: true });
+		updateProgress();
+	});
+</script>

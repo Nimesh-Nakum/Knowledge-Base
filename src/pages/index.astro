@@ -1,49 +1,505 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SeriesCard from '../components/SeriesCard.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import SearchDialog from '../components/SearchDialog.astro';
+import { SITE_TITLE, SITE_DESCRIPTION, COLLECTIONS_META, getReadingTime } from '../consts';
+
+// Define the collections that should be featured as series
+const featuredCollections = [
+	'windows-internals',
+	'active-directory',
+	'windows-security',
+	'projects',
+	'malware-development'
+];
+
+const collectionCounts: Record<string, number> = {};
+let allArticles: any[] = [];
+let totalResearch = 0;
+let totalWriteups = 0;
+let totalProjects = 0;
+let reflexionx: any = null;
+
+// Fetch featured series
+for (const slug of featuredCollections) {
+	try {
+		const docs = await getCollection(slug as any);
+		const filtered = docs.filter((p: any) => !p.data.draft);
+		collectionCounts[slug] = filtered.length;
+		allArticles.push(...filtered.map((p: any) => ({ ...p, collection: slug })));
+	} catch (e) {
+		collectionCounts[slug] = 0;
+	}
+}
+
+// Fetch other categories
+try {
+	const research = await getCollection('research');
+	const filteredRes = research.filter((p: any) => !p.data.draft);
+	totalResearch = filteredRes.length;
+	allArticles.push(...filteredRes.map((p: any) => ({ ...p, collection: 'research' })));
+} catch (e) {}
+
+try {
+	const writeups = await getCollection('writeups');
+	const filteredWr = writeups.filter((p: any) => !p.data.draft);
+	totalWriteups = filteredWr.length;
+	allArticles.push(...filteredWr.map((p: any) => ({ ...p, collection: 'writeups' })));
+} catch (e) {}
+
+try {
+	const projects = await getCollection('projects');
+	totalProjects = projects.filter((p: any) => !p.data.draft).length;
+	reflexionx = projects.find((p: any) => p.id.includes('reflexionx'));
+} catch (e) {}
+
+// Compute order for series
+const collectionGroups: Record<string, any[]> = {};
+allArticles.forEach(a => {
+	if (!collectionGroups[a.collection]) collectionGroups[a.collection] = [];
+	collectionGroups[a.collection].push(a);
+});
+
+for (const key in collectionGroups) {
+	collectionGroups[key].sort((a, b) => {
+		const orderA = a.data.order !== undefined ? a.data.order : a.data.pubDate.valueOf();
+		const orderB = b.data.order !== undefined ? b.data.order : b.data.pubDate.valueOf();
+		return orderA - orderB;
+	});
+	collectionGroups[key].forEach((a, i) => {
+		a.seriesOrder = a.data.order !== undefined ? a.data.order : i + 1;
+		a.seriesName = COLLECTIONS_META[key]?.name || key;
+	});
+}
+
+const latestArticles = allArticles
+	.filter((a) => !a.id.includes('coming-soon') && !a.data.title.includes('Classified') && !a.data.tags?.includes('placeholder'))
+	.sort((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf())
+	.slice(0, 9);
+
+console.log('DEBUG_LATEST_ARTICLES_LENGTH:', latestArticles.length);
+console.log('DEBUG_LATEST_ARTICLES_TITLES:', latestArticles.map((a: any) => a.data.title));
+
+function getArticleHref(article: any) {
+	const slug = article.slug || (article.id ? article.id.split('/').pop().replace(/\.mdx?$/, '') : '');
+	if (article.collection === 'research') return `/research/${slug}/`;
+	if (article.collection === 'writeups') return `/writeups/${slug}/`;
+	if (article.collection === 'projects') return `/projects/${slug}/`;
+	return `/${article.collection}/${slug}/`;
+}
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
+<BaseLayout title={SITE_TITLE} description={SITE_DESCRIPTION}>
+	<SearchDialog />
+	<!-- Hero Section -->
+	<section class="hero">
+		<div class="hero-inner">
+			<h1 class="hero-title">
+				Offensive Security Research <span class="cursor">_</span>
+			</h1>
+			<p class="hero-subtitle">
+				Deep technical research covering Windows Internals, Active Directory, Windows Security, Malware Development, Exploit Development, Reverse Engineering, Web Security, and Red Team methodologies.
 			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to
-				<a href="https://docs.astro.build/">read the docs</a>
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
-</html>
+			
+			<div class="hero-actions">
+				<a href="#latest" class="btn btn-primary">Explore Research</a>
+				<a href="/windows-internals/" class="btn btn-outline">Browse Documentation</a>
+			</div>
+
+			<div class="tech-chips">
+				{['Windows', 'Active Directory', 'Kerberos', 'NTLM', 'Windows Internals', 'Malware', 'Reverse Engineering', 'Web Security', 'Exploit Development', 'Red Team', 'BloodHound', 'AD CS'].map(chip => (
+					<span class="tech-chip">{chip}</span>
+				))}
+			</div>
+		</div>
+	</section>
+
+	<!-- Series / Collections -->
+	<section class="section">
+		<div class="section-inner">
+			<div class="section-header">
+				<h2 class="section-title">Security Domains</h2>
+			</div>
+			
+			<div class="series-grid stagger">
+				{featuredCollections.map((slug) => {
+					const meta = COLLECTIONS_META[slug];
+					if (!meta) return null;
+					return (
+						<SeriesCard
+							name={meta.name}
+							description={meta.description}
+							href={`/${slug}/`}
+							color={meta.color}
+							articleCount={collectionCounts[slug] || 0}
+						/>
+					);
+				})}
+			</div>
+		</div>
+	</section>
+
+	<!-- Featured Project -->
+	{reflexionx && (
+		<section class="section">
+			<div class="section-inner">
+				<div class="section-header">
+					<h2 class="section-title">Featured Project</h2>
+				</div>
+				
+				<div class="featured-project-card card-hover-effect">
+					<div class="fp-content">
+						<h3 class="fp-title">{reflexionx.data.title}</h3>
+						<span class="fp-status">STATUS: {reflexionx.data.status?.toUpperCase() || 'ACTIVE'}</span>
+						<p class="fp-desc">{reflexionx.data.description}</p>
+						
+						<div class="fp-tech">
+							{reflexionx.data.technologies?.map((tech: string) => (
+								<span class="tech-chip">{tech}</span>
+							))}
+						</div>
+
+						<div class="fp-actions">
+							<a href={`/projects/${reflexionx.id.split('/').pop().replace(/\.mdx?$/, '')}/`} class="btn btn-primary">View Architecture & Documentation</a>
+							{reflexionx.data.github && (
+								<a href={reflexionx.data.github} target="_blank" rel="noopener noreferrer" class="btn btn-outline">GitHub Repository</a>
+							)}
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+	)}
+
+	<!-- Latest Articles -->
+	{latestArticles.length > 0 && (
+		<section class="section" id="latest">
+			<div class="section-inner">
+				<div class="section-header">
+					<h2 class="section-title">Latest Articles</h2>
+				</div>
+				<div class="articles-grid stagger">
+					{latestArticles.map((article) => (
+						<ArticleCard
+							title={article.data.title}
+							description={article.data.description}
+							href={getArticleHref(article)}
+							pubDate={article.data.pubDate}
+							tags={article.data.tags}
+							readingTime={getReadingTime(article.body || '')}
+							order={article.seriesOrder}
+							seriesName={article.seriesName}
+						/>
+					))}
+				</div>
+			</div>
+		</section>
+	)}
+
+	<!-- Quick Links -->
+	<section class="section">
+		<div class="section-inner">
+			<div class="quick-links">
+				<a href="/writeups/" class="quick-link-card">
+					<h3>Writeups</h3>
+					<p>HTB, THM, PortSwigger, and CTF challenge writeups.</p>
+				</a>
+				<a href="/projects/" class="quick-link-card">
+					<h3>Projects</h3>
+					<p>Custom security tools, frameworks, and research projects.</p>
+				</a>
+				<a href="/about/" class="quick-link-card">
+					<h3>About</h3>
+					<p>Background, skills, certifications, and contact.</p>
+				</a>
+			</div>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	.hero {
+		background: radial-gradient(ellipse at top, rgba(0, 255, 0, 0.05) 0%, transparent 60%);
+	}
+
+	.hero-inner {
+		max-width: var(--max-width);
+		margin: 0 auto;
+		padding: var(--space-3xl) var(--space-lg);
+		text-align: center;
+	}
+
+	.cursor {
+		color: var(--accent-red);
+		animation: blink 1s step-end infinite;
+	}
+
+	@keyframes blink {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0; }
+	}
+
+	.hero-title {
+		font-size: 3rem;
+		font-weight: 700;
+		line-height: 1.15;
+		letter-spacing: -0.03em;
+		margin-bottom: var(--space-lg);
+		color: var(--accent-red);
+		animation: glitch 4s cubic-bezier(.25, .46, .45, .94) both infinite;
+	}
+
+	@keyframes glitch {
+		0%, 90% { transform: translate(0) }
+		91% { transform: translate(-2px, 2px) }
+		92% { transform: translate(2px, -2px) }
+		93% { transform: translate(0) }
+	}
+
+	.hero-actions {
+		display: flex;
+		gap: var(--space-md);
+		margin-top: var(--space-xl);
+		margin-bottom: var(--space-2xl);
+		justify-content: center;
+	}
+
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 12px 24px;
+		font-family: var(--font-code);
+		font-weight: 600;
+		font-size: 0.9rem;
+		text-transform: uppercase;
+		text-decoration: none;
+		letter-spacing: 0.05em;
+		transition: all 0.2s ease;
+	}
+
+	.btn-primary {
+		background: var(--accent);
+		color: var(--bg-primary);
+		border: 1px solid var(--accent);
+	}
+
+	.btn-primary:hover {
+		background: var(--accent-light);
+		box-shadow: 0 0 15px var(--accent-bg);
+	}
+
+	.btn-outline {
+		background: transparent;
+		color: var(--text);
+		border: 1px solid var(--border);
+	}
+
+	.btn-outline:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+
+	.tech-chips {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		max-width: 800px;
+		justify-content: center;
+		margin: var(--space-lg) auto 0;
+	}
+
+	.tech-chip {
+		font-family: var(--font-code);
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		background: var(--bg-elevated);
+		border: 1px solid var(--border);
+		padding: 4px 10px;
+		border-radius: 2px;
+	}
+
+	.featured-project-card {
+		background: var(--bg-card);
+		border: none;
+		border-radius: var(--radius-lg);
+		padding: var(--space-2xl);
+		margin-bottom: var(--space-xl);
+		display: grid;
+		gap: var(--space-lg);
+	}
+
+	.fp-title {
+		font-size: 2rem;
+		font-weight: 700;
+		margin-bottom: var(--space-xs);
+		color: var(--text);
+	}
+
+	.fp-status {
+		display: inline-block;
+		font-family: var(--font-code);
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		margin-bottom: var(--space-md);
+		letter-spacing: 0.05em;
+	}
+
+	.fp-desc {
+		color: var(--text-secondary);
+		font-size: 1.1rem;
+		margin-bottom: var(--space-lg);
+		max-width: 800px;
+	}
+
+	.fp-tech {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-bottom: var(--space-xl);
+	}
+
+	.fp-actions {
+		display: flex;
+		gap: var(--space-md);
+		flex-wrap: wrap;
+	}
+
+	.hero-subtitle {
+		max-width: 640px;
+		margin: 0 auto var(--space-xl);
+		font-size: 1.0625rem;
+		color: var(--text-muted);
+		line-height: 1.7;
+		animation: slideUp 0.5s ease 0.2s both;
+	}
+
+	.hero-stats {
+		display: flex;
+		justify-content: center;
+		gap: var(--space-2xl);
+		animation: slideUp 0.5s ease 0.4s both;
+	}
+
+	.stat-item {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-xs);
+	}
+
+	.stat-value {
+		font-size: 2rem;
+		font-weight: 700;
+		font-family: var(--font-code);
+		color: var(--accent);
+	}
+
+	.stat-label {
+		font-size: 0.875rem;
+		color: var(--text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.section {
+		padding: var(--space-3xl) 0;
+	}
+
+	.section-inner {
+		max-width: var(--max-width);
+		margin: 0 auto;
+		padding: 0 var(--space-lg);
+	}
+
+	.section-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		margin-bottom: var(--space-2xl);
+	}
+
+	.section-title {
+		font-size: 1.75rem;
+		font-weight: 600;
+		color: var(--text);
+	}
+
+	.series-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+		gap: var(--space-lg);
+	}
+
+	.articles-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--space-xl);
+	}
+
+	.quick-links {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--space-md);
+	}
+
+	.quick-link-card {
+		padding: var(--space-lg);
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		text-decoration: none;
+		transition: border-color var(--transition-base), transform var(--transition-base);
+	}
+
+	.quick-link-card:hover {
+		border-color: var(--accent-border);
+		transform: translateY(-2px);
+	}
+
+	.ql-icon {
+		font-size: 1.5rem;
+		display: block;
+		margin-bottom: var(--space-md);
+	}
+
+	.quick-link-card h3 {
+		font-size: 1rem;
+		margin-bottom: var(--space-sm);
+		color: var(--text);
+	}
+
+	.quick-link-card p {
+		font-size: 0.875rem;
+		color: var(--text-muted);
+		margin: 0;
+		line-height: 1.5;
+	}
+
+	@media (max-width: 768px) {
+		.hero-inner {
+			padding: var(--space-2xl) var(--space-md);
+		}
+
+		.hero-title {
+			font-size: 2rem;
+		}
+
+		.hero-stats {
+			gap: var(--space-lg);
+			flex-wrap: wrap;
+		}
+
+		.series-grid,
+		.articles-grid,
+		.quick-links {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	@media (min-width: 769px) and (max-width: 1024px) {
+		.articles-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+</style>

@@ -1,63 +1,190 @@
 ---
-import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
-import Layout from '../layouts/BlogPost.astro';
+import PageLayout from '../layouts/PageLayout.astro';
+import { AUTHOR } from '../consts';
 ---
 
-<Layout
-	title="About Me"
-	description="Lorem ipsum dolor sit amet"
-	pubDate={new Date('August 08 2021')}
-	heroImage={AboutHeroImage}
->
-	<p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-		labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
-		viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam
-		adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus
-		et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus
-		vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque
-		sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
-	</p>
+<PageLayout title="About" description="Security researcher focused on Windows Internals, Active Directory, and offensive security.">
+	<div class="about-page">
+		<div class="about-header">
+			<div class="profile-avatar">
+				<span class="avatar-placeholder">NN</span>
+			</div>
+			<div class="profile-info">
+				<h1 class="profile-name">{AUTHOR.name}</h1>
+				<p class="profile-title">Security Researcher & Offensive Security Engineer</p>
+				<p class="profile-bio">{AUTHOR.bio}</p>
+				<div class="profile-links">
+					{AUTHOR.github && <a href={AUTHOR.github} target="_blank" rel="noopener" class="profile-link">GitHub</a>}
+					{AUTHOR.linkedin && <a href={AUTHOR.linkedin} target="_blank" rel="noopener" class="profile-link">LinkedIn</a>}
+					{AUTHOR.medium && <a href={AUTHOR.medium} target="_blank" rel="noopener" class="profile-link">Medium</a>}
+					{AUTHOR.twitter && <a href={AUTHOR.twitter} target="_blank" rel="noopener" class="profile-link">Twitter</a>}
+					{AUTHOR.email && <a href={`mailto:${AUTHOR.email}`} class="profile-link">Email</a>}
+				</div>
+			</div>
+		</div>
 
-	<p>
-		Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non
-		tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non
-		blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna
-		porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis
-		massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc.
-		Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis
-		bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra
-		massa massa ultricies mi.
-	</p>
+		<section class="about-section">
+			<h2>Focus Areas</h2>
+			<div class="skills-grid">
+				<div class="skill-card">
+					<h3>🪟 Windows Internals</h3>
+					<p>Deep understanding of Windows architecture, kernel internals, processes, threads, and memory management.</p>
+				</div>
+				<div class="skill-card">
+					<h3>🏢 Active Directory</h3>
+					<p>Active Directory security, Kerberos authentication, LDAP, Group Policy, and enterprise attack paths.</p>
+				</div>
+				<div class="skill-card">
+					<h3>🛡️ Offensive Security</h3>
+					<p>Red Team operations, penetration testing, exploit development, and adversary simulation.</p>
+				</div>
+				<div class="skill-card">
+					<h3>🔬 Malware Research</h3>
+					<p>Malware analysis, reverse engineering, evasion techniques, and custom tool development.</p>
+				</div>
+			</div>
+		</section>
 
-	<p>
-		Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl
-		suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet
-		nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae
-		turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem
-		dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat
-		semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus
-		vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum
-		facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam
-		vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla
-		urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
-	</p>
+		<section class="about-section">
+			<h2>Certifications</h2>
+			<p class="placeholder-text">Certifications will be listed here.</p>
+		</section>
 
-	<p>
-		Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper
-		viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc
-		scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur
-		gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus
-		pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim
-		blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id
-		cursus metus aliquam eleifend mi.
-	</p>
+		<section class="about-section">
+			<h2>Experience</h2>
+			<p class="placeholder-text">Professional experience will be listed here.</p>
+		</section>
+	</div>
+</PageLayout>
 
-	<p>
-		Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta
-		nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam
-		tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci
-		ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar
-		proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
-	</p>
-</Layout>
+<style>
+	.about-page {
+		max-width: 800px;
+	}
+
+	.about-header {
+		display: flex;
+		gap: var(--space-xl);
+		align-items: flex-start;
+		margin-bottom: var(--space-3xl);
+		padding-bottom: var(--space-2xl);
+	}
+
+	.profile-avatar {
+		flex-shrink: 0;
+	}
+
+	.avatar-placeholder {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 96px;
+		height: 96px;
+		background: var(--accent-red-bg);
+		border: 2px solid var(--accent-red);
+		border-radius: 50%;
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--accent-red);
+		font-family: var(--font-heading);
+	}
+
+	.profile-name {
+		font-size: 1.75rem;
+		margin-bottom: var(--space-xs);
+	}
+
+	.profile-title {
+		color: var(--accent-red);
+		font-size: 1rem;
+		font-weight: 500;
+		margin-bottom: var(--space-md);
+	}
+
+	.profile-bio {
+		color: var(--text-muted);
+		font-size: 0.9375rem;
+		line-height: 1.7;
+		margin-bottom: var(--space-md);
+	}
+
+	.profile-links {
+		display: flex;
+		gap: var(--space-md);
+		flex-wrap: wrap;
+	}
+
+	.profile-link {
+		padding: 6px 16px;
+		background: var(--bg-elevated);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		color: var(--text-muted);
+		font-size: 0.8125rem;
+		font-weight: 500;
+		text-decoration: none;
+		transition: color var(--transition-fast), border-color var(--transition-fast);
+	}
+
+	.profile-link:hover {
+		color: var(--accent-red);
+		border-color: var(--accent-red);
+	}
+
+	.about-section {
+		margin-bottom: var(--space-2xl);
+	}
+
+	.about-section h2 {
+		font-size: 1.375rem;
+		margin-bottom: var(--space-lg);
+		padding-bottom: var(--space-sm);
+		color: var(--accent-red);
+	}
+
+	.skills-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: var(--space-md);
+	}
+
+	.skill-card {
+		padding: var(--space-lg);
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+	}
+
+	.skill-card h3 {
+		font-size: 1rem;
+		margin-bottom: var(--space-sm);
+	}
+
+	.skill-card p {
+		font-size: 0.875rem;
+		color: var(--text-muted);
+		line-height: 1.6;
+		margin: 0;
+	}
+
+	.placeholder-text {
+		color: var(--text-dim);
+		font-style: italic;
+	}
+
+	@media (max-width: 768px) {
+		.about-header {
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+		}
+
+		.profile-links {
+			justify-content: center;
+		}
+
+		.skills-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

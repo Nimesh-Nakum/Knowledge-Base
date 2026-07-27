@@ -1,0 +1,253 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import PrevNext from '../components/PrevNext.astro';
+import ShareButtons from '../components/ShareButtons.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import TagBadge from '../components/TagBadge.astro';
+import DifficultyBadge from '../components/DifficultyBadge.astro';
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+	title: string;
+	description: string;
+	pubDate: Date;
+	updatedDate?: Date;
+	tags?: string[];
+	author?: string;
+	difficulty?: string;
+	readingTime?: string;
+	headings?: MarkdownHeading[];
+	breadcrumbs?: { label: string; href: string }[];
+	prevArticle?: { title: string; href: string };
+	nextArticle?: { title: string; href: string };
+	sidebarContent?: any;
+}
+
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	tags = [],
+	author = 'Nimesh Nakum',
+	difficulty,
+	readingTime,
+	headings = [],
+	breadcrumbs = [],
+	prevArticle,
+	nextArticle,
+} = Astro.props;
+---
+
+<BaseLayout title={title} description={description} type="article" publishedDate={pubDate} modifiedDate={updatedDate} tags={tags}>
+	<ReadingProgress />
+	<div class="article-layout">
+		<!-- Left Sidebar -->
+		<aside class="article-sidebar-left">
+			<slot name="sidebar" />
+		</aside>
+
+		<!-- Main Content -->
+		<article class="article-main">
+			{breadcrumbs.length > 0 && <Breadcrumbs items={breadcrumbs} />}
+
+			<header class="article-header">
+				<div class="metadata-panel">
+					<div class="meta-row">
+						<div class="meta-item">
+							<span class="meta-label">CLASSIFICATION</span>
+							<span class="meta-value status-active">OFFENSIVE RESEARCH</span>
+						</div>
+						<div class="meta-item">
+							<span class="meta-label">TARGET</span>
+							<span class="meta-value">{tags.length > 0 ? tags[0].toUpperCase() : 'WINDOWS'}</span>
+						</div>
+						<div class="meta-item">
+							<span class="meta-label">DIFFICULTY</span>
+							<span class="meta-value">{difficulty ? difficulty.toUpperCase() : 'ADVANCED'}</span>
+						</div>
+						<div class="meta-item">
+							<span class="meta-label">PUBLISHED</span>
+							<span class="meta-value"><FormattedDate date={pubDate} /></span>
+						</div>
+						{readingTime && (
+							<div class="meta-item">
+								<span class="meta-label">TIME</span>
+								<span class="meta-value">{readingTime.toUpperCase()}</span>
+							</div>
+						)}
+					</div>
+					
+					{tags.length > 0 && (
+						<div class="meta-tags-row">
+							<span class="meta-label">TAGS:</span>
+							<div class="meta-tags">
+								{tags.map((tag) => <TagBadge tag={tag} />)}
+							</div>
+						</div>
+					)}
+				</div>
+
+				<h1 class="article-title">{title}</h1>
+				<p class="article-description">{description}</p>
+			</header>
+
+			<div class="prose">
+				<slot />
+			</div>
+
+			<ShareButtons title={title} />
+			<PrevNext prev={prevArticle} next={nextArticle} />
+		</article>
+
+		<!-- Right Sidebar: ToC -->
+		<aside class="article-sidebar-right">
+			{headings.length > 0 && <TableOfContents headings={headings} />}
+		</aside>
+	</div>
+</BaseLayout>
+
+<style>
+	.article-layout {
+		display: grid;
+		grid-template-columns: var(--sidebar-width) minmax(0, 1fr) var(--toc-width);
+		gap: var(--space-xl);
+		max-width: 100%;
+		margin: 0 auto;
+		padding: var(--space-xl) var(--space-3xl);
+	}
+
+	.article-sidebar-left {
+		position: sticky;
+		top: calc(var(--header-height) + var(--space-xl));
+		max-height: calc(100vh - var(--header-height) - var(--space-2xl));
+		overflow-y: auto;
+		padding-right: var(--space-md);
+		scrollbar-width: thin;
+	}
+
+	.article-sidebar-right {
+		position: sticky;
+		top: calc(var(--header-height) + var(--space-xl));
+		max-height: calc(100vh - var(--header-height) - var(--space-2xl));
+		overflow-y: auto;
+		scrollbar-width: thin;
+	}
+
+	.article-main {
+		min-width: 0;
+	}
+
+	.article-header {
+		margin-bottom: var(--space-2xl);
+	}
+
+	.metadata-panel {
+		margin-bottom: var(--space-xl);
+		font-family: var(--font-code);
+	}
+
+	.meta-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-xl);
+		margin-bottom: var(--space-sm);
+		padding-bottom: var(--space-sm);
+		border-bottom: 1px solid var(--border-light);
+	}
+
+	.meta-row:last-child {
+		border-bottom: none;
+		margin-bottom: 0;
+		padding-bottom: 0;
+	}
+
+	.meta-item {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+
+	.meta-label {
+		font-size: 0.65rem;
+		color: var(--text-dim);
+		letter-spacing: 0.05em;
+	}
+
+	.meta-value {
+		font-size: 0.8rem;
+		color: var(--text);
+		font-weight: 600;
+	}
+
+	.status-active {
+		color: var(--accent);
+	}
+
+	.status-active::before {
+		content: '';
+		display: inline-block;
+		width: 6px;
+		height: 6px;
+		background: var(--accent);
+		border-radius: 50%;
+		margin-right: 6px;
+		box-shadow: 0 0 5px var(--accent);
+	}
+
+	.meta-tags-row {
+		display: flex;
+		align-items: center;
+		gap: var(--space-md);
+		padding-top: var(--space-xs);
+	}
+
+	.meta-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+
+	.article-title {
+		font-size: 2.5rem;
+		font-weight: 800;
+		line-height: 1.2;
+		color: var(--text);
+		margin-bottom: var(--space-md);
+	}
+
+	.article-description {
+		font-size: 1.25rem;
+		color: var(--text-muted);
+		line-height: 1.6;
+		max-width: 800px;
+	}
+
+	@media (max-width: 1100px) {
+		.article-layout {
+			grid-template-columns: minmax(0, 1fr) var(--toc-width);
+		}
+		.article-sidebar-left {
+			display: none;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.article-layout {
+			grid-template-columns: 1fr;
+			padding: var(--space-md);
+		}
+		.article-sidebar-right {
+			display: none;
+		}
+		.article-title {
+			font-size: 1.75rem;
+		}
+		.article-description {
+			font-size: 1rem;
+		}
+	}
+</style>

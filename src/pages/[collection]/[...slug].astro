@@ -1,0 +1,75 @@
+---
+import { getCollection, render } from 'astro:content';
+import ArticleLayout from '../../layouts/ArticleLayout.astro';
+import { COLLECTIONS_META } from '../../consts';
+
+export async function getStaticPaths() {
+	const collectionsList = [
+		'windows-internals',
+		'active-directory',
+		'windows-security',
+		'web-security',
+		'malware-development',
+		'research',
+		'writeups',
+		'projects'
+	];
+
+	const paths = [];
+
+	for (const collection of collectionsList) {
+		const docs = await getCollection(collection as any);
+		
+		// Sort docs based on collection logic for Previous/Next links
+		const sortedDocs = docs
+			.filter((p: any) => !p.data.draft)
+			.sort((a: any, b: any) => {
+				if (a.data.order !== undefined && b.data.order !== undefined) {
+					return a.data.order - b.data.order;
+				}
+				return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+			});
+
+		for (let i = 0; i < sortedDocs.length; i++) {
+			const doc = sortedDocs[i];
+			
+			// Build path info
+			const idParts = doc.id.split('/');
+			const slug = idParts.pop(); // The filename without extension acts as the slug
+
+			paths.push({
+				params: { collection, slug },
+				props: {
+					doc,
+					collection,
+					prevArticle: i > 0 ? { title: sortedDocs[i - 1].data.title, href: `/${collection}/${sortedDocs[i - 1].id.split('/').pop()}/` } : null,
+					nextArticle: i < sortedDocs.length - 1 ? { title: sortedDocs[i + 1].data.title, href: `/${collection}/${sortedDocs[i + 1].id.split('/').pop()}/` } : null,
+				},
+			});
+		}
+	}
+
+	return paths;
+}
+
+const { doc, collection, prevArticle, nextArticle } = Astro.props;
+const { Content, headings } = await render(doc);
+const meta = COLLECTIONS_META[collection!] || { name: collection };
+
+const breadcrumbs = [
+	{ label: meta.name, href: `/${collection}/` },
+	{ label: doc.data.title, href: `/${collection}/${doc.id.split('/').pop()}/` }
+];
+---
+
+<ArticleLayout
+	{...doc.data}
+	collection={collection}
+	headings={headings}
+	body={doc.body}
+	breadcrumbs={breadcrumbs}
+	prevArticle={prevArticle}
+	nextArticle={nextArticle}
+>
+	<Content />
+</ArticleLayout>

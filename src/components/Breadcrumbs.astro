@@ -1,0 +1,65 @@
+---
+interface Props {
+	items: { label: string; href: string }[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+	<ol>
+		<li><a href="/">Home</a></li>
+		{items.map((item, i) => (
+			<li>
+				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+				{i === items.length - 1 ? (
+					<span aria-current="page">{item.label}</span>
+				) : (
+					<a href={item.href}>{item.label}</a>
+				)}
+			</li>
+		))}
+	</ol>
+</nav>
+
+<style>
+	.breadcrumbs {
+		margin-bottom: var(--space-lg);
+	}
+
+	ol {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--space-xs);
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	li {
+		display: flex;
+		align-items: center;
+		gap: var(--space-xs);
+		font-size: 0.8125rem;
+	}
+
+	li svg {
+		color: var(--text-dim);
+		flex-shrink: 0;
+	}
+
+	a {
+		color: var(--text-dim);
+		text-decoration: none;
+		transition: color var(--transition-fast);
+	}
+
+	a:hover {
+		color: var(--accent-light);
+	}
+
+	span[aria-current='page'] {
+		color: var(--text-muted);
+	}
+</style>

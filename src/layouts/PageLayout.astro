@@ -1,0 +1,43 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+	title: string;
+	description: string;
+	image?: ImageMetadata;
+	publishedDate?: Date;
+	modifiedDate?: Date;
+	tags?: string[];
+}
+
+const { title, description, image, publishedDate, modifiedDate, tags } = Astro.props;
+---
+
+<BaseLayout
+	title={title}
+	description={description}
+	image={image}
+	type="website"
+	publishedDate={publishedDate}
+	modifiedDate={modifiedDate}
+	tags={tags}
+>
+	<div class="page-container">
+		<slot />
+	</div>
+</BaseLayout>
+
+<style>
+	.page-container {
+		max-width: var(--max-width);
+		margin: 0 auto;
+		padding: var(--space-2xl) var(--space-lg);
+	}
+
+	@media (max-width: 768px) {
+		.page-container {
+			padding: var(--space-xl) var(--space-md);
+		}
+	}
+</style>

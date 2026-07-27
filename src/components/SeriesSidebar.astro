@@ -1,0 +1,99 @@
+---
+interface Props {
+	articles: { title: string; href: string; order: number }[];
+	currentSlug?: string;
+	seriesName: string;
+}
+
+const { articles, currentSlug, seriesName } = Astro.props;
+const sorted = [...articles].sort((a, b) => a.order - b.order);
+---
+
+<nav class="series-sidebar" aria-label="Series navigation">
+	<h4 class="sidebar-title">{seriesName}</h4>
+	<ul class="sidebar-list">
+		{sorted.map((article) => {
+			const isActive = currentSlug && article.href.includes(currentSlug);
+			return (
+				<li>
+					<a
+						href={article.href}
+						class:list={['sidebar-link', { active: isActive }]}
+						aria-current={isActive ? 'page' : undefined}
+					>
+						<span class="sidebar-order">{article.order}</span>
+						<span class="sidebar-text">{article.title}</span>
+					</a>
+				</li>
+			);
+		})}
+	</ul>
+</nav>
+
+<style>
+	.series-sidebar {
+		padding-right: var(--space-md);
+	}
+
+	.sidebar-title {
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--text-muted);
+		margin-bottom: var(--space-md);
+		font-family: var(--font-body);
+	}
+
+	.sidebar-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.sidebar-list li {
+		margin-bottom: 2px;
+	}
+
+	.sidebar-link {
+		display: flex;
+		align-items: flex-start;
+		gap: var(--space-sm);
+		padding: var(--space-sm) var(--space-md);
+		color: var(--text-dim);
+		font-size: 0.8125rem;
+		text-decoration: none;
+		border-radius: var(--radius-md);
+		border-left: 2px solid transparent;
+		transition: color var(--transition-fast), background var(--transition-fast), border-color var(--transition-fast);
+		line-height: 1.4;
+	}
+
+	.sidebar-link:hover {
+		color: var(--text);
+		background: var(--bg-hover);
+	}
+
+	.sidebar-link.active {
+		color: var(--accent-light);
+		background: var(--accent-bg);
+		border-left-color: var(--accent);
+	}
+
+	.sidebar-order {
+		flex-shrink: 0;
+		font-family: var(--font-code);
+		font-weight: 600;
+		font-size: 0.75rem;
+		color: var(--text-dim);
+		min-width: 1.25rem;
+	}
+
+	.sidebar-link.active .sidebar-order {
+		color: var(--accent);
+	}
+
+	.sidebar-text {
+		flex: 1;
+	}
+</style>

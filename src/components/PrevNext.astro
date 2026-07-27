@@ -1,0 +1,93 @@
+---
+interface Props {
+	prev?: { title: string; href: string };
+	next?: { title: string; href: string };
+}
+
+const { prev, next } = Astro.props;
+---
+
+{(prev || next) && (
+	<nav class="prev-next" aria-label="Article navigation">
+		<div class="prev-next-grid">
+			{prev ? (
+				<a href={prev.href} class="prev-next-card prev">
+					<span class="prev-next-label">
+						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+						Previous
+					</span>
+					<span class="prev-next-title">{prev.title}</span>
+				</a>
+			) : <div />}
+			{next ? (
+				<a href={next.href} class="prev-next-card next">
+					<span class="prev-next-label">
+						Next
+						<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+					</span>
+					<span class="prev-next-title">{next.title}</span>
+				</a>
+			) : <div />}
+		</div>
+	</nav>
+)}
+
+<style>
+	.prev-next {
+		margin-top: var(--space-2xl);
+		padding-top: var(--space-xl);
+
+	}
+
+	.prev-next-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-md);
+	}
+
+	.prev-next-card {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-sm);
+		padding: var(--space-lg);
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		text-decoration: none;
+		transition: border-color var(--transition-fast), background var(--transition-fast);
+	}
+
+	.prev-next-card:hover {
+		border-color: var(--accent-border);
+		background: var(--bg-elevated);
+	}
+
+	.prev-next-card.next {
+		text-align: right;
+		align-items: flex-end;
+	}
+
+	.prev-next-label {
+		display: flex;
+		align-items: center;
+		gap: var(--space-xs);
+		font-size: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--text-dim);
+		font-weight: 600;
+	}
+
+	.prev-next-title {
+		font-size: 0.9375rem;
+		font-weight: 500;
+		color: var(--text);
+		line-height: 1.4;
+	}
+
+	@media (max-width: 640px) {
+		.prev-next-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

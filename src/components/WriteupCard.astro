@@ -1,0 +1,155 @@
+---
+import FormattedDate from './FormattedDate.astro';
+import PlatformBadge from './PlatformBadge.astro';
+import DifficultyBadge from './DifficultyBadge.astro';
+
+interface Props {
+	title: string;
+	description: string;
+	href: string;
+	pubDate: Date;
+	platform: string;
+	difficulty: string;
+	skills?: string[];
+	target?: string;
+	category?: string;
+}
+
+const { title, description, href, pubDate, platform, difficulty, skills = [], target = 'Windows Server', category = 'Web Exploitation' } = Astro.props;
+---
+
+<article class="writeup-card card-hover-effect">
+	<div class="card-content">
+		<div class="card-meta-top">
+			<span class="meta-label">TARGET:</span>
+			<span class="meta-value">{target.toUpperCase()}</span>
+			<span class="meta-separator">//</span>
+			<span class="meta-label">CAT:</span>
+			<span class="meta-value">{category.toUpperCase()}</span>
+		</div>
+		
+		<div class="card-header">
+			<h3 class="card-title">
+				<a href={href} class="card-link">{title}</a>
+			</h3>
+		</div>
+		
+		<p class="card-desc">{description}</p>
+		
+		<div class="card-footer">
+			<div class="card-badges">
+				<PlatformBadge platform={platform} />
+				<DifficultyBadge difficulty={difficulty} />
+			</div>
+			{skills.length > 0 && (
+				<div class="card-skills">
+					{skills.slice(0, 4).map((skill) => (
+						<span class="skill-item">{skill}</span>
+					))}
+				</div>
+			)}
+		</div>
+	</div>
+</article>
+
+<style>
+	.writeup-card {
+		display: block;
+		position: relative;
+		padding: var(--space-xl);
+		background: var(--bg-card);
+		border: none;
+		border-radius: var(--radius-lg);
+		text-decoration: none;
+		transition: all var(--transition-base);
+	}
+
+	.writeup-card:hover {
+		background: var(--bg-hover);
+		transform: translateY(-2px);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+	}
+
+	.card-meta-top {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		font-family: var(--font-code);
+		font-size: 0.65rem;
+		color: var(--text-dim);
+		margin-bottom: var(--space-md);
+		letter-spacing: 0.05em;
+	}
+
+	.meta-value {
+		color: var(--text-muted);
+	}
+
+	.meta-separator {
+		margin: 0 4px;
+		opacity: 0.5;
+	}
+
+	.card-header {
+		margin-bottom: var(--space-sm);
+	}
+
+	.card-title {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: var(--text);
+	}
+
+	.card-link {
+		color: var(--text);
+		text-decoration: none;
+	}
+
+	.card-link::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+	}
+
+	.card-desc {
+		font-size: 0.9rem;
+		color: var(--text-muted);
+		line-height: 1.6;
+		margin-bottom: var(--space-lg);
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.card-footer {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+		border-top: 1px dashed var(--border);
+		padding-top: var(--space-md);
+	}
+
+	.card-badges {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+	}
+
+	.card-skills {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+
+	.skill-item {
+		font-family: var(--font-code);
+		font-size: 0.7rem;
+		color: var(--text-dim);
+		background: var(--bg-elevated);
+		border: 1px solid var(--border-light);
+		padding: 2px 6px;
+		border-radius: 2px;
+	}
+</style>

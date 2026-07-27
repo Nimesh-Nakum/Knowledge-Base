@@ -1,0 +1,160 @@
+---
+interface Props {
+	name: string;
+	description: string;
+	href: string;
+	color: string;
+	articleCount: number;
+}
+
+const { name, description, href, color, articleCount } = Astro.props;
+---
+
+<article class="series-card card-hover-effect">
+	<div class="card-content">
+		<div class="card-meta-top">
+			<span class="meta-label">STATUS:</span>
+			<span class="meta-value status-active">ACTIVE</span>
+		</div>
+		
+		<div class="card-header">
+			<h3 class="card-title">
+				<a href={href} class="card-link">{name}</a>
+			</h3>
+		</div>
+		
+		<p class="card-desc">{description}</p>
+		
+		<div class="card-footer">
+			<div class="card-metrics">
+				<span>{articleCount} {articleCount === 1 ? 'Article' : 'Articles'}</span>
+				<span class="metric-separator">•</span>
+				<span>Est. Time: {articleCount * 10} min</span>
+			</div>
+			
+			<div class="card-action">
+				Open Documentation →
+			</div>
+		</div>
+	</div>
+</article>
+
+<style>
+	.series-card {
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		padding: var(--space-xl);
+		background: var(--bg-card);
+		border: none;
+		border-radius: var(--radius-lg);
+		text-decoration: none;
+		transition: all var(--transition-base);
+		height: 100%;
+	}
+
+	.card-content {
+		display: flex;
+		flex-direction: column;
+		flex: 1;
+	}
+
+	.series-card:hover {
+		background: var(--bg-hover);
+		transform: translateY(-2px);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+	}
+
+	.card-meta-top {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		font-family: var(--font-code);
+		font-size: 0.65rem;
+		color: var(--text-dim);
+		margin-bottom: var(--space-md);
+		letter-spacing: 0.05em;
+	}
+
+	.status-active {
+		color: var(--text-muted);
+	}
+	
+	.status-active::before {
+		content: '';
+		display: inline-block;
+		width: 6px;
+		height: 6px;
+		background: var(--text-dim);
+		border-radius: 50%;
+		margin-right: 4px;
+	}
+
+	.card-header {
+		margin-bottom: var(--space-sm);
+	}
+
+	.card-title {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--text);
+	}
+	
+	.card-link {
+		color: var(--text);
+		text-decoration: none;
+	}
+
+	.card-link::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+	}
+
+	.card-desc {
+		font-size: 1rem;
+		color: var(--text-muted);
+		line-height: 1.6;
+		margin-bottom: var(--space-xl);
+	}
+
+	.card-footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--space-sm);
+		border-top: 1px dashed var(--border);
+		padding-top: var(--space-md);
+		margin-top: auto;
+	}
+
+	.card-metrics {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-family: var(--font-code);
+		font-size: 0.75rem;
+		color: var(--text-dim);
+	}
+
+	.metric-separator {
+		opacity: 0.3;
+	}
+
+	.card-action {
+		font-family: var(--font-code);
+		font-size: 0.75rem;
+		color: var(--text-muted);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	@media (max-width: 640px) {
+		.series-card {
+			flex-direction: column;
+			gap: var(--space-md);
+		}
+	}
+</style>

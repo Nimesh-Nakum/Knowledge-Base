@@ -1,0 +1,210 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { COLLECTIONS_META, getReadingTime } from '../../consts';
+
+export async function getStaticPaths() {
+	const collectionsList = [
+		'windows-internals',
+		'active-directory',
+		'windows-security',
+		'web-security',
+		'malware-development',
+		'research',
+		'writeups',
+		'projects'
+	];
+
+	const paths = [];
+
+	for (const collection of collectionsList) {
+		const allDocs = await getCollection(collection as any);
+		paths.push({
+			params: { collection },
+			props: {
+				docs: allDocs
+					.filter((p: any) => !p.data.draft)
+					.sort((a: any, b: any) => {
+						if (a.data.order !== undefined && b.data.order !== undefined) {
+							return a.data.order - b.data.order;
+						}
+						return b.data.pubDate.valueOf() - a.data.pubDate.valueOf();
+					})
+			}
+		});
+	}
+
+	return paths;
+}
+
+const { collection } = Astro.params;
+const { docs } = Astro.props;
+const meta = COLLECTIONS_META[collection!] || { name: collection, description: '', color: '#3B82F6' };
+
+const totalReadingTime = docs.reduce((acc: number, a: any) => {
+	const words = (a.body || '').split(/\s+/).length;
+	return acc + Math.ceil(words / 200);
+}, 0);
+
+const breadcrumbs = [
+	{ label: meta.name, href: `/${collection}/` }
+];
+---
+
+<PageLayout title={meta.name} description={meta.description}>
+	<Breadcrumbs items={breadcrumbs} />
+
+	<div class="series-header" style={`--series-color: ${meta.color}`}>
+		<h1>{meta.name}</h1>
+		<p class="series-desc">{meta.description}</p>
+		<div class="series-stats">
+			<span>{docs.length} {docs.length === 1 ? 'article' : 'articles'}</span>
+			{collection !== 'projects' && (
+				<>
+					<span class="stat-sep">·</span>
+					<span>{totalReadingTime} min total reading time</span>
+				</>
+			)}
+		</div>
+	</div>
+
+	{((docs.length === 0) || (docs.length === 1 && docs[0].id.includes('coming-soon') || docs[0].id.includes('reflexionx') || docs[0].id.includes('token-manipulation'))) ? (
+		<div class="coming-soon-wrapper">
+			<h2 class="glitch-title" data-text={`${meta.name.toUpperCase()} COMING SOON`}>
+				{meta.name.toUpperCase()} COMING SOON
+			</h2>
+			<div class="terminal-box">
+				<p class="typewriter">Hang in there...</p>
+				<p class="fade-in">[SYSTEM] Modules for {meta.name} are currently compiling.</p>
+				<p class="fade-in delay-1">[SYSTEM] Bypassing security protocols...</p>
+				<p class="fade-in delay-2">[INFO] New declassified content arriving shortly.</p>
+				<div class="cursor-blink">_</div>
+			</div>
+		</div>
+	) : (
+		<div class="articles-list stagger">
+			{docs.filter((doc: any) => !doc.id.includes('coming-soon')).map((doc: any) => (
+				<ArticleCard
+					title={doc.data.title}
+					description={doc.data.description}
+					href={`/${collection}/${doc.id.split('/').pop()}/`}
+					pubDate={doc.data.pubDate}
+					tags={doc.data.tags}
+					readingTime={getReadingTime(doc.body || '')}
+					difficulty={doc.data.difficulty}
+					order={doc.data.order}
+				/>
+			))}
+		</div>
+	)}
+</PageLayout>
+
+<style>
+	.series-header {
+		margin-bottom: var(--space-2xl);
+		padding-bottom: var(--space-xl);
+	}
+
+	.series-header h1 {
+		font-size: 2rem;
+		margin-bottom: var(--space-md);
+	}
+
+	.series-desc {
+		color: var(--text-muted);
+		font-size: 1.0625rem;
+		max-width: 640px;
+		margin-bottom: var(--space-lg);
+	}
+
+	.series-stats {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+		font-size: 0.875rem;
+		color: var(--text-dim);
+	}
+
+	.stat-sep {
+		color: var(--border);
+	}
+
+	.articles-list {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+	}
+
+	.coming-soon-wrapper {
+		margin: 2rem 0;
+		padding: 2rem;
+		background: #0a0a0a;
+		border: 1px solid var(--accent-red);
+		border-radius: 4px;
+		position: relative;
+		overflow: hidden;
+	}
+
+	.glitch-title {
+		font-size: 2.5rem;
+		font-weight: bold;
+		color: var(--accent-red);
+		text-transform: uppercase;
+		position: relative;
+		display: inline-block;
+		margin-bottom: 1.5rem;
+		animation: glitch-anim 4s infinite;
+	}
+
+	.terminal-box {
+		font-family: var(--font-code);
+		color: var(--accent);
+		font-size: 0.95rem;
+		line-height: 1.6;
+	}
+
+	.typewriter {
+		display: inline-block;
+		overflow: hidden;
+		white-space: nowrap;
+		border-right: 2px solid var(--accent);
+		animation: typing 2s steps(40, end), blink-caret .75s step-end infinite;
+		margin-bottom: 1rem;
+		color: var(--text);
+	}
+
+	.fade-in {
+		opacity: 0;
+		animation: fadeIn 0.1s forwards;
+	}
+
+	.delay-1 { animation-delay: 2s; }
+	.delay-2 { animation-delay: 3s; }
+	
+	.cursor-blink {
+		display: inline-block;
+		margin-top: 1rem;
+		animation: blink-caret 1s step-end infinite;
+		color: var(--accent-red);
+	}
+
+	@keyframes typing {
+	  from { max-width: 0 }
+	  to { max-width: 100% }
+	}
+	@keyframes blink-caret {
+	  from, to { border-color: transparent }
+	  50% { border-color: var(--accent-red); }
+	}
+	@keyframes fadeIn {
+		to { opacity: 1; }
+	}
+	@keyframes glitch-anim {
+		0%, 90% { transform: translate(0); text-shadow: none; }
+		91% { transform: translate(-2px, 1px); text-shadow: -2px 0 var(--accent), 2px 0 var(--accent-red); }
+		93% { transform: translate(1px, -1px); text-shadow: 2px 0 var(--accent), -2px 0 var(--accent-red); }
+		95% { transform: translate(0, 0); text-shadow: none; }
+	}
+</style>

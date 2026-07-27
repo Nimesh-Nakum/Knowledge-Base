@@ -1,0 +1,147 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+	headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+const filteredHeadings = headings.filter((h) => h.depth <= 3);
+---
+
+{filteredHeadings.length > 0 && (
+	<nav class="toc" aria-label="Table of Contents">
+		<h4 class="toc-title">On this page</h4>
+		<ul class="toc-list">
+			{filteredHeadings.map((heading) => (
+				<li class:list={[`toc-depth-${heading.depth}`]}>
+					<a href={`#${heading.slug}`} class="toc-link" data-heading-slug={heading.slug}>
+						{heading.text}
+					</a>
+				</li>
+			))}
+		</ul>
+		<div class="toc-actions">
+			<button id="back-to-top" type="button" class="back-to-top" aria-label="Back to top">
+				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>
+				Back to top
+			</button>
+		</div>
+	</nav>
+)}
+
+<style>
+	.toc {
+		padding-left: var(--space-md);
+		border-left: 1px solid var(--border);
+	}
+
+	.toc-title {
+		font-size: 0.75rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
+		color: var(--text-muted);
+		margin-bottom: var(--space-md);
+		font-family: var(--font-body);
+	}
+
+	.toc-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.toc-list li {
+		margin-bottom: 2px;
+	}
+
+	.toc-link {
+		display: block;
+		padding: 4px 0;
+		color: var(--text-dim);
+		font-size: 0.8125rem;
+		text-decoration: none;
+		line-height: 1.4;
+		transition: color var(--transition-fast);
+		border-left: 2px solid transparent;
+		margin-left: -17px;
+		padding-left: 15px;
+	}
+
+	.toc-link:hover {
+		color: var(--text);
+	}
+
+	.toc-link.active {
+		color: var(--accent-light);
+		border-left-color: var(--accent);
+	}
+
+	.toc-depth-3 {
+		padding-left: var(--space-md);
+	}
+
+	.toc-actions {
+		margin-top: var(--space-lg);
+		padding-top: var(--space-md);
+
+	}
+
+	.back-to-top {
+		display: flex;
+		align-items: center;
+		gap: var(--space-sm);
+		background: none;
+		border: none;
+		color: var(--text-dim);
+		font-size: 0.8125rem;
+		cursor: pointer;
+		padding: 0;
+		font-family: var(--font-body);
+		transition: color var(--transition-fast);
+	}
+
+	.back-to-top:hover {
+		color: var(--accent-light);
+	}
+</style>
+
+<script is:inline>
+	document.addEventListener('DOMContentLoaded', function () {
+		/* Active heading tracking */
+		const tocLinks = document.querySelectorAll('.toc-link');
+		const headings = [];
+
+		tocLinks.forEach(function (link) {
+			const slug = link.getAttribute('data-heading-slug');
+			const el = document.getElementById(slug);
+			if (el) headings.push({ el: el, link: link });
+		});
+
+		if (headings.length > 0) {
+			var observer = new IntersectionObserver(
+				function (entries) {
+					entries.forEach(function (entry) {
+						if (entry.isIntersecting) {
+							tocLinks.forEach(function (l) { l.classList.remove('active'); });
+							var match = headings.find(function (h) { return h.el === entry.target; });
+							if (match) match.link.classList.add('active');
+						}
+					});
+				},
+				{ rootMargin: '-80px 0px -70% 0px', threshold: 0 }
+			);
+
+			headings.forEach(function (h) { observer.observe(h.el); });
+		}
+
+		/* Back to top */
+		var btn = document.getElementById('back-to-top');
+		if (btn) {
+			btn.addEventListener('click', function () {
+				window.scrollTo({ top: 0, behavior: 'smooth' });
+			});
+		}
+	});
+</script>

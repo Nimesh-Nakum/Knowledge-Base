@@ -1,0 +1,113 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getReadingTime } from '../../consts';
+
+export async function getStaticPaths() {
+	const [allSeries, allResearch, allWriteups, allProjects] = await Promise.all([
+		getCollection('series'),
+		getCollection('research'),
+		getCollection('writeups'),
+		getCollection('projects')
+	]);
+
+	const allContent = [...allSeries, ...allResearch, ...allWriteups, ...allProjects].filter((p: any) => !p.data.draft);
+
+	// Collect all unique tags
+	const allTags = new Set<string>();
+	allContent.forEach((item: any) => {
+		(item.data.tags || []).forEach((tag: string) => allTags.add(tag.toLowerCase()));
+	});
+
+	return [...allTags].map((tag) => {
+		const tagged = allContent.filter((item: any) =>
+			(item.data.tags || []).some((t: string) => t.toLowerCase() === tag)
+		);
+
+		return {
+			params: { tag },
+			props: { tag, articles: tagged },
+		};
+	});
+}
+
+const { tag, articles } = Astro.props;
+
+function getArticleHref(article: any): string {
+	if ('series' in article.data) {
+		return `/series/${article.data.series}/${article.id.split('/').pop()}/`;
+	}
+	if ('platform' in article.data) {
+		return `/writeups/${article.id}/`;
+	}
+	if ('technologies' in article.data) {
+		return `/projects/${article.id}/`;
+	}
+	return `/research/${article.id}/`;
+}
+
+const sorted = [...articles].sort((a: any, b: any) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+---
+
+<PageLayout title={`Tagged: ${tag}`} description={`All articles tagged with "${tag}".`}>
+	<div class="page-header">
+		<a href="/tags/" class="back-link">← All Tags</a>
+		<h1>#{tag}</h1>
+		<p class="page-desc">{sorted.length} {sorted.length === 1 ? 'article' : 'articles'} tagged with "{tag}".</p>
+	</div>
+
+	<div class="articles-grid stagger">
+		{sorted.map((article: any) => (
+			<ArticleCard
+				title={article.data.title}
+				description={article.data.description}
+				href={getArticleHref(article)}
+				pubDate={article.data.pubDate}
+				tags={article.data.tags}
+				readingTime={getReadingTime(article.body || '')}
+			/>
+		))}
+	</div>
+</PageLayout>
+
+<style>
+	.page-header {
+		margin-bottom: var(--space-2xl);
+	}
+
+	.back-link {
+		display: inline-block;
+		margin-bottom: var(--space-md);
+		font-size: 0.875rem;
+		color: var(--text-dim);
+		text-decoration: none;
+	}
+
+	.back-link:hover {
+		color: var(--accent-light);
+	}
+
+	.page-header h1 {
+		font-size: 2rem;
+		margin-bottom: var(--space-md);
+		color: var(--accent-light);
+	}
+
+	.page-desc {
+		color: var(--text-muted);
+		font-size: 1.0625rem;
+	}
+
+	.articles-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: var(--space-md);
+	}
+
+	@media (max-width: 768px) {
+		.articles-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

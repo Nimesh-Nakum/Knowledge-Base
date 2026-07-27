@@ -1,35 +1,50 @@
 // @ts-check
 
-import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import expressiveCode from 'astro-expressive-code';
 import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://example.com',
-	integrations: [mdx(), sitemap()],
+	site: 'https://nimesh-nakum.security',
+	integrations: [
+		expressiveCode({
+			themes: ['github-dark'],
+			styleOverrides: {
+				borderColor: '#222222',
+				borderRadius: '0px',
+				codeFontFamily: 'var(--font-code)',
+				codeFontSize: '0.875rem',
+				codeLineHeight: '1.7',
+				codePaddingBlock: '1rem',
+				codePaddingInline: '1.25rem',
+				frames: {
+					frameBoxShadowCssValue: 'none',
+					editorActiveTabBackground: '#0a0a0a',
+					editorBackground: '#000000',
+					editorTabBarBackground: '#000000',
+					editorTabBarBorderBottomColor: '#222222',
+					terminalBackground: '#050505',
+					terminalTitlebarBackground: '#050505',
+					terminalTitlebarBorderBottomColor: '#222222',
+				},
+			},
+		}),
+		sitemap(),
+	],
 	fonts: [
 		{
-			provider: fontProviders.local(),
-			name: 'Atkinson',
-			cssVariable: '--font-atkinson',
-			fallbacks: ['sans-serif'],
-			options: {
-				variants: [
-					{
-						src: ['./src/assets/fonts/atkinson-regular.woff'],
-						weight: 400,
-						style: 'normal',
-						display: 'swap',
-					},
-					{
-						src: ['./src/assets/fonts/atkinson-bold.woff'],
-						weight: 700,
-						style: 'normal',
-						display: 'swap',
-					},
-				],
-			},
+			provider: fontProviders.google(),
+			name: 'Inter',
+			cssVariable: '--font-body',
+			fallbacks: ['system-ui', 'sans-serif'],
+		},
+
+		{
+			provider: fontProviders.google(),
+			name: 'JetBrains Mono',
+			cssVariable: '--font-code',
+			fallbacks: ['monospace'],
 		},
 	],
 });

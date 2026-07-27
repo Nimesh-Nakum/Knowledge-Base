@@ -1,0 +1,104 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+
+const [allSeries, allResearch, allWriteups, allProjects] = await Promise.all([
+	getCollection('series'),
+	getCollection('research'),
+	getCollection('writeups'),
+	getCollection('projects')
+]);
+
+const allContent = [...allSeries, ...allResearch, ...allWriteups, ...allProjects].filter((p) => !p.data.draft);
+
+// Collect all tags with counts
+const tagCounts: Record<string, number> = {};
+allContent.forEach((item) => {
+	(item.data.tags || []).forEach((tag: string) => {
+		tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+	});
+});
+
+const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+---
+
+<PageLayout title="Tags" description="Browse all content tags.">
+	<div class="page-header">
+		<h1>Tags</h1>
+		<p class="page-desc">Browse all {sortedTags.length} tags across the knowledge base.</p>
+	</div>
+
+	<div class="tags-cloud">
+		{sortedTags.map(([tag, count]) => (
+			<a href={`/tags/${tag.toLowerCase()}/`} class="tag-item">
+				<span class="tag-name">{tag}</span>
+				<span class="tag-count">{count}</span>
+			</a>
+		))}
+	</div>
+
+	{sortedTags.length === 0 && (
+		<div class="empty-state">
+			<p>No tags yet. Tags will appear as content is published.</p>
+		</div>
+	)}
+</PageLayout>
+
+<style>
+	.page-header {
+		margin-bottom: var(--space-2xl);
+	}
+
+	.page-header h1 {
+		font-size: 2rem;
+		margin-bottom: var(--space-md);
+	}
+
+	.page-desc {
+		color: var(--text-muted);
+		font-size: 1.0625rem;
+	}
+
+	.tags-cloud {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-sm);
+	}
+
+	.tag-item {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-sm);
+		padding: var(--space-sm) var(--space-md);
+		background: var(--bg-card);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		text-decoration: none;
+		transition: border-color var(--transition-fast), background var(--transition-fast);
+	}
+
+	.tag-item:hover {
+		border-color: var(--accent-border);
+		background: var(--bg-elevated);
+	}
+
+	.tag-name {
+		color: var(--text);
+		font-size: 0.875rem;
+		font-weight: 500;
+	}
+
+	.tag-count {
+		font-size: 0.75rem;
+		color: var(--text-dim);
+		background: var(--bg-elevated);
+		padding: 1px 6px;
+		border-radius: 9999px;
+	}
+
+	.empty-state {
+		padding: var(--space-3xl);
+		text-align: center;
+		color: var(--text-dim);
+	}
+</style>

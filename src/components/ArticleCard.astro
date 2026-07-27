@@ -1,0 +1,200 @@
+---
+import FormattedDate from './FormattedDate.astro';
+import TagBadge from './TagBadge.astro';
+import DifficultyBadge from './DifficultyBadge.astro';
+
+interface Props {
+	title: string;
+	description: string;
+	href: string;
+	pubDate: Date;
+	tags?: string[];
+	readingTime?: string;
+	difficulty?: string;
+	order?: number;
+	seriesName?: string;
+	attackCategory?: string;
+	status?: string;
+}
+
+const { title, description, href, pubDate, tags = [], readingTime, difficulty, order, seriesName, attackCategory, status = 'Published' } = Astro.props;
+
+const derivedAttackCategory = attackCategory || (tags.length > 0 ? tags[0].toUpperCase() : 'RESEARCH');
+---
+
+<article class="article-card card-hover-effect">
+	<div class="card-content">
+		<div class="card-meta-top">
+			<span class="meta-label">STATUS</span>
+			<span class="meta-value status-indicator">{status.toUpperCase()}</span>
+			<span class="meta-separator">//</span>
+			<span class="meta-label">CAT</span>
+			<span class="meta-value">{derivedAttackCategory}</span>
+		</div>
+		
+		<div class="card-header">
+			<h3 class="card-title">
+				<a href={href} class="card-link">{title}</a>
+			</h3>
+			{order !== undefined && <span class="card-order">Part {order}</span>}
+		</div>
+		
+		<p class="card-desc">{description}</p>
+		
+		<div class="card-footer">
+			<div class="card-metrics">
+				<FormattedDate date={pubDate} />
+				{readingTime && <span class="metric-separator">•</span>}
+				{readingTime && <span>{readingTime}</span>}
+				{difficulty && <span class="metric-separator">•</span>}
+				{difficulty && <span>{difficulty}</span>}
+			</div>
+			{tags.length > 0 && (
+				<div class="card-tags" onclick="event.stopPropagation()">
+					{tags.slice(0, 2).map((tag) => <TagBadge tag={tag} />)}
+				</div>
+			)}
+		</div>
+	</div>
+</article>
+
+<style>
+	.article-card {
+		display: block;
+		position: relative;
+		padding: var(--space-xl);
+		background: var(--bg-card);
+		border: none;
+		border-radius: var(--radius-lg);
+		text-decoration: none;
+		transition: all var(--transition-base);
+	}
+
+	.article-card:hover {
+		background: var(--bg-hover);
+		transform: translateY(-2px);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+	}
+
+	.card-meta-top {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		font-family: var(--font-code);
+		font-size: 0.65rem;
+		color: var(--text-dim);
+		margin-bottom: var(--space-md);
+		letter-spacing: 0.05em;
+	}
+
+	.meta-value {
+		color: var(--text-muted);
+	}
+
+	.status-indicator {
+		color: var(--text-muted);
+	}
+
+	.status-indicator::before {
+		content: '';
+		display: inline-block;
+		width: 6px;
+		height: 6px;
+		background: var(--text-dim);
+		border-radius: 50%;
+		margin-right: 4px;
+	}
+
+	.meta-separator {
+		margin: 0 4px;
+		opacity: 0.5;
+	}
+
+	.card-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: var(--space-md);
+		margin-bottom: var(--space-sm);
+	}
+
+	.card-order {
+		font-size: 0.7rem;
+		font-weight: 700;
+		color: var(--accent-red);
+		font-family: var(--font-code);
+		padding: 2px 6px;
+		border: 1px solid var(--accent-red-bg);
+		background: rgba(239, 68, 68, 0.05);
+		white-space: nowrap;
+	}
+
+	.card-title {
+		font-size: 1.125rem;
+		font-weight: 600;
+		margin-bottom: var(--space-sm);
+		line-height: 1.3;
+	}
+
+	.card-link {
+		color: var(--text);
+		text-decoration: none;
+	}
+
+	.card-link::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 1;
+	}
+
+	.card-desc {
+		font-size: 0.9rem;
+		color: var(--text-muted);
+		line-height: 1.6;
+		margin-bottom: var(--space-lg);
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.card-footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: var(--space-sm);
+		border-top: 1px dashed var(--border);
+		padding-top: var(--space-md);
+	}
+
+	.card-metrics {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-family: var(--font-code);
+		font-size: 0.75rem;
+		color: var(--text-dim);
+	}
+
+	.metric-separator {
+		opacity: 0.3;
+	}
+		color: var(--text-dim);
+		margin-bottom: var(--space-sm);
+	}
+
+	.card-reading-time {
+		color: var(--text-dim);
+	}
+
+	.card-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-xs);
+		margin-top: var(--space-sm);
+		position: relative;
+		z-index: 2;
+	}
+</style>

@@ -1,0 +1,33 @@
+---
+interface Props {
+	platform: string;
+}
+
+const { platform } = Astro.props;
+
+const platforms: Record<string, { label: string; color: string; bg: string }> = {
+	hackthebox: { label: 'HackTheBox', color: '#9FEF00', bg: 'rgba(159, 239, 0, 0.1)' },
+	tryhackme: { label: 'TryHackMe', color: '#FF4444', bg: 'rgba(255, 68, 68, 0.1)' },
+	portswigger: { label: 'PortSwigger', color: '#FF6633', bg: 'rgba(255, 102, 51, 0.1)' },
+	ctf: { label: 'CTF', color: '#A855F7', bg: 'rgba(168, 85, 247, 0.1)' },
+};
+
+const p = platforms[platform.toLowerCase()] || platforms.ctf;
+---
+
+<span class="platform-badge" style={`color:${p.color};background:${p.bg};border-color:${p.color}30`}>
+	{p.label}
+</span>
+
+<style>
+	.platform-badge {
+		display: inline-flex;
+		align-items: center;
+		padding: 3px 10px;
+		border: 1px solid;
+		border-radius: var(--radius-sm);
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+	}
+</style>
