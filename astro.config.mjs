@@ -6,7 +6,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://nimesh-nakum.security',
+	site: 'https://knowledge-base-cs7.pages.dev',
 	integrations: [
 		expressiveCode({
 			themes: ['github-dark'],
