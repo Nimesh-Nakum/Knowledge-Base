@@ -12,9 +12,10 @@ interface Props {
 	publishedDate?: Date;
 	modifiedDate?: Date;
 	tags?: string[];
+	author?: string;
 }
 
-const { title, description, image, type, publishedDate, modifiedDate, tags } = Astro.props;
+const { title, description, image, type, publishedDate, modifiedDate, tags, author } = Astro.props;
 ---
 
 <!doctype html>
@@ -28,6 +29,7 @@ const { title, description, image, type, publishedDate, modifiedDate, tags } = A
 			publishedDate={publishedDate}
 			modifiedDate={modifiedDate}
 			tags={tags}
+			author={author}
 		/>
 	</head>
 	<body>

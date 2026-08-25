@@ -12,6 +12,7 @@ interface Props {
 	publishedDate?: Date;
 	modifiedDate?: Date;
 	tags?: string[];
+	author?: string;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -24,10 +25,41 @@ const {
 	publishedDate,
 	modifiedDate,
 	tags = [],
+	author = 'Nimesh Nakum',
 } = Astro.props;
 
 const fullTitle = title === SITE_TITLE ? title : `${title} — ${SITE_TITLE}`;
 const ogImageUrl = image ? new URL(image.src, Astro.site) : undefined;
+
+let schema;
+if (type === 'article') {
+	schema = {
+		"@context": "https://schema.org",
+		"@type": "BlogPosting",
+		"headline": title,
+		"description": description,
+		"url": canonicalURL.href,
+		"mainEntityOfPage": {
+			"@type": "WebPage",
+			"@id": canonicalURL.href
+		},
+		"author": {
+			"@type": "Person",
+			"name": author
+		},
+		"datePublished": publishedDate?.toISOString(),
+		"dateModified": (modifiedDate || publishedDate)?.toISOString(),
+		...(tags.length > 0 && { "keywords": tags }),
+		...(ogImageUrl && { "image": ogImageUrl.href })
+	};
+} else if (Astro.url.pathname === '/') {
+	schema = {
+		"@context": "https://schema.org",
+		"@type": "WebSite",
+		"name": SITE_TITLE,
+		"url": SITE_URL
+	};
+}
 ---
 
 <!-- Global Metadata -->
@@ -55,7 +87,7 @@ const ogImageUrl = image ? new URL(image.src, Astro.site) : undefined;
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
 {tags.length > 0 && <meta name="keywords" content={tags.join(', ')} />}
-<meta name="author" content="Nimesh Nakum" />
+<meta name="author" content={author} />
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={type} />
@@ -86,3 +118,5 @@ const ogImageUrl = image ? new URL(image.src, Astro.site) : undefined;
 		document.documentElement.setAttribute('data-theme', theme);
 	})();
 </script>
+
+{schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
