@@ -8,7 +8,7 @@ tags: ['windows-internals', 'dll-hijacking', 'privilege-escalation', 'procmon']
 
 Press enter or click to view image in full size
 
-what if you didn’t need to hollow anything? What if Windows itself loads your malicious code, willingly, through its own loader?
+what if you didn’t need to [hollow](/windows-internals/process-hollowing/) anything? What if Windows itself loads your malicious code, willingly, through its own loader?
 
 That’s DLL hijacking — the OS doing your dirty work.
 

@@ -9,9 +9,10 @@ interface Props {
 	publishedDate?: Date;
 	modifiedDate?: Date;
 	tags?: string[];
+	noindex?: boolean;
 }
 
-const { title, description, image, publishedDate, modifiedDate, tags } = Astro.props;
+const { title, description, image, publishedDate, modifiedDate, tags, noindex } = Astro.props;
 ---
 
 <BaseLayout
@@ -22,6 +23,7 @@ const { title, description, image, publishedDate, modifiedDate, tags } = Astro.p
 	publishedDate={publishedDate}
 	modifiedDate={modifiedDate}
 	tags={tags}
+	noindex={noindex}
 >
 	<div class="page-container">
 		<slot />

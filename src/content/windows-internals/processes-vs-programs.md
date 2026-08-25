@@ -186,13 +186,13 @@ Two screenshots. Two columns. One complete picture:
 
 Every privilege escalation technique in Windows is finding a path from a weak token to a strong one.
 
-Process hollowing? Abusing the address space and PEB. Token theft? Copying the `EX_FAST_REF` token field from EPROCESS. PPID spoofing? Lying about `UniqueProcessId` of the parent at creation time. DKOM rootkit? Unlinking `ActiveProcessLinks` so the process disappears from every tool that walks that list. PPL bypass? Stripping the protection level field in EPROCESS — which requires ring-0 access, hence the driver.
+Process hollowing? Abusing the address space and PEB — see [Process Hollowing from First Principles](/windows-internals/process-hollowing/). Token theft? Copying the `EX_FAST_REF` token field from EPROCESS. PPID spoofing? Lying about `UniqueProcessId` of the parent at creation time. DKOM rootkit? Unlinking `ActiveProcessLinks` so the process disappears from every tool that walks that list. PPL bypass? Stripping the protection level field in EPROCESS — which requires ring-0 access, hence the driver (see [BYOVD Explained](/windows-internals/byovd-explained/)).
 
 You now have the mental model. Every attack in this series builds on exactly this foundation.
 
 ## What’s Next
 
-Blog 3 — Why Attackers Love lsass.exe
+[Why Attackers Love LSASS.exe](/windows-internals/lsass-deep-dive/)
 
 lsass.exe is a process. You now know what a process is. Next: inside lsass specifically — which DLLs it loads, what each stores, and why PPL, Credential Guard, and RunAsPPL change the attack surface entirely.
 

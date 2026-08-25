@@ -1,6 +1,6 @@
 ---
-title: "Introduction to the Windows Internals Series"
-description: "An introduction to the Windows Internals series, covering the goals, prerequisites, and roadmap for understanding how Windows works under the hood."
+title: "Windows Internals Introduction: Architecture, Processes & APIs"
+description: "An introduction to the Windows Internals series, covering the goals, prerequisites, and roadmap for understanding how Windows works under the hood from a security perspective."
 pubDate: 2026-07-26
 series: "Windows Internals"
 part: 0
@@ -12,8 +12,6 @@ tags:
   - Red Team
   - Security
 ---
-
-# Windows Internals
 
 Welcome to the **Windows Internals** series.
 
@@ -100,16 +98,16 @@ While not mandatory, the following knowledge will be helpful:
 The exact roadmap may evolve over time, but topics will generally include:
 
 1. Windows Architecture
-2. Processes and Threads
+2. [Processes and Threads](/windows-internals/processes-vs-programs/)
 3. Virtual Memory
 4. PE File Format
-5. DLL Loading
+5. [DLL Loading](/windows-internals/dll-hijacking/)
 6. Windows Object Manager
 7. Access Tokens
 8. Security Descriptors
-9. Native API
+9. [Native API](/windows-internals/win32-api-vs-native-api/)
 10. Process Injection
-11. Process Hollowing
+11. [Process Hollowing](/windows-internals/process-hollowing/)
 12. Windows Security Mechanisms
 
 ---

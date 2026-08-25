@@ -3,6 +3,7 @@ title: 'Classified: Access Restricted'
 description: 'This sector of the knowledge base is currently under construction.'
 pubDate: 2026-07-26
 tags: ['placeholder', 'restricted']
+noindex: true
 ---
 
 <div class="coming-soon-wrapper">

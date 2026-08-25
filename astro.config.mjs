@@ -30,7 +30,24 @@ export default defineConfig({
 				},
 			},
 		}),
-		sitemap(),
+		sitemap({
+			// Exclude pages that carry noindex: true in their frontmatter.
+			// These slugs map 1-to-1 to the placeholder content files.
+			filter: (page) => {
+				const EXCLUDED_PATHS = [
+					'/malware-development/coming-soon/',
+					'/web-security/coming-soon/',
+					'/windows-security/coming-soon/',
+					'/writeups/coming-soon/',
+					'/research/token-manipulation/',
+					'/projects/reflexionx/',
+					// Exclude the organisational-only tag pages
+					'/tags/placeholder/',
+					'/tags/restricted/',
+				];
+				return !EXCLUDED_PATHS.some((path) => page.endsWith(path));
+			},
+		}),
 	],
 	fonts: [
 		{

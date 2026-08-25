@@ -125,7 +125,7 @@ Look for: Protection: PsProtectedSignerLsa-Light
 
 Bypass: `mimidrv.sys` — Mimikatz's own kernel driver. It directly zeroes the `Protection` field in `_EPROCESS` at the kernel level. Once stripped, lsass is no longer protected and the standard dump flow works again.
 
-This is exactly why BYOVD exists as an attack class. PPL cannot be defeated from userland — you need ring 0.
+This is exactly why [BYOVD](/windows-internals/byovd-explained/) exists as an attack class. PPL cannot be defeated from userland — you need ring 0.
 
 ### 2\. Credential Guard — The Hard Wall
 
@@ -227,4 +227,4 @@ Package          : Kerberos     kerberos.dll
 What this proves: You can see exactly which SSP stored which credential — and understand why disabling wdigest breaks the cleartext output.
 
 ## What’s Next
-Next → Blog 4: BYOVD Explained — How Attackers Use Signed Drivers to Kill EDRs PPL bypass requires a kernel driver. Blog 4 explains exactly how attackers load one — and why a _signed_ vulnerable driver is more dangerous than unsigned malware.
+Next → [BYOVD Explained: How Attackers Use Signed Drivers to Kill EDRs](/windows-internals/byovd-explained/). PPL bypass requires a kernel driver. Blog 4 explains exactly how attackers load one — and why a _signed_ vulnerable driver is more dangerous than unsigned malware.

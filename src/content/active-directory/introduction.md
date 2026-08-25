@@ -1,6 +1,6 @@
 ---
-title: "Introduction to the Active Directory Series"
-description: "An introduction to the Active Directory series, covering the architecture, authentication, and security concepts every penetration tester and defender should understand."
+title: "Active Directory Introduction: Architecture, Authentication & Security"
+description: "An introduction to the Active Directory series, covering the architecture, authentication protocols, and security concepts every penetration tester and defender must understand."
 pubDate: 2026-07-26
 series: "Active Directory"
 part: 0
@@ -12,8 +12,6 @@ tags:
   - Active Directory Security
   - Kerberos
 ---
-
-# Active Directory
 
 Welcome to the **Active Directory** series.
 

@@ -198,4 +198,4 @@ Every layer is a detection surface.
 And every bypass is simply a decision to move around the layer being watched.
 The more you understand this stack, the better you understand both attack and defense.
 
-Next, we’ll go deeper — into what a process actually is internally, and why it becomes the primary target for injection and manipulation.
+Next, we’ll go deeper — into [what a process actually is internally](/windows-internals/processes-vs-programs/), and why it becomes the primary target for injection and manipulation.

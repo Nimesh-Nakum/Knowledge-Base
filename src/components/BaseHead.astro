@@ -13,6 +13,7 @@ interface Props {
 	modifiedDate?: Date;
 	tags?: string[];
 	author?: string;
+	noindex?: boolean;
 }
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -26,6 +27,7 @@ const {
 	modifiedDate,
 	tags = [],
 	author = 'Nimesh Nakum',
+	noindex = false,
 } = Astro.props;
 
 const fullTitle = title === SITE_TITLE ? title : `${title} — ${SITE_TITLE}`;
@@ -45,7 +47,8 @@ if (type === 'article') {
 		},
 		"author": {
 			"@type": "Person",
-			"name": author
+			"name": author,
+			"url": new URL('/about/', Astro.site).href
 		},
 		"datePublished": publishedDate?.toISOString(),
 		"dateModified": (modifiedDate || publishedDate)?.toISOString(),
@@ -88,6 +91,7 @@ if (type === 'article') {
 <meta name="description" content={description} />
 {tags.length > 0 && <meta name="keywords" content={tags.join(', ')} />}
 <meta name="author" content={author} />
+{noindex && <meta name="robots" content="noindex,follow" />}
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content={type} />

@@ -5,14 +5,25 @@ import ArticleCard from '../../components/ArticleCard.astro';
 import { getReadingTime } from '../../consts';
 
 export async function getStaticPaths() {
-	const [allSeries, allResearch, allWriteups, allProjects] = await Promise.all([
-		getCollection('series'),
-		getCollection('research'),
-		getCollection('writeups'),
-		getCollection('projects')
-	]);
+	const collections = [
+		'windows-internals',
+		'active-directory',
+		'windows-security',
+		'web-security',
+		'malware-development',
+		'research',
+		'writeups',
+		'projects',
+	];
 
-	const allContent = [...allSeries, ...allResearch, ...allWriteups, ...allProjects].filter((p: any) => !p.data.draft);
+	let allContent: any[] = [];
+	for (const col of collections) {
+		try {
+			const docs = await getCollection(col as any);
+			const filtered = docs.filter((p: any) => !p.data.draft);
+			allContent.push(...filtered.map((p: any) => ({ ...p, collection: col })));
+		} catch (e) {}
+	}
 
 	// Collect all unique tags
 	const allTags = new Set<string>();
@@ -34,23 +45,18 @@ export async function getStaticPaths() {
 
 const { tag, articles } = Astro.props;
 
+// Tags that exist only as content organisation artefacts and carry no search value
+const NOINDEX_TAGS = new Set(['placeholder', 'restricted']);
+const noindex = NOINDEX_TAGS.has(tag.toLowerCase());
+
 function getArticleHref(article: any): string {
-	if ('series' in article.data) {
-		return `/series/${article.data.series}/${article.id.split('/').pop()}/`;
-	}
-	if ('platform' in article.data) {
-		return `/writeups/${article.id}/`;
-	}
-	if ('technologies' in article.data) {
-		return `/projects/${article.id}/`;
-	}
-	return `/research/${article.id}/`;
+	return `/${article.collection}/${article.id.split('/').pop()}/`;
 }
 
 const sorted = [...articles].sort((a: any, b: any) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<PageLayout title={`Tagged: ${tag}`} description={`All articles tagged with "${tag}".`}>
+<PageLayout title={`Tagged: ${tag}`} description={`All articles tagged with "${tag}".`} noindex={noindex}>
 	<div class="page-header">
 		<a href="/tags/" class="back-link">← All Tags</a>
 		<h1>#{tag}</h1>

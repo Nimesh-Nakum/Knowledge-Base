@@ -20,7 +20,7 @@ That’s the philosophical core of the technique, and it’s exactly why it has 
 
 ## Prerequisites: What You Need to Internalize First
 
-For Better understnading of the flow , I recommand to read the previous blogs first.
+For better understanding of the flow, it is recommended to read [Win32 API vs Native API](/windows-internals/win32-api-vs-native-api/) and [Windows Processes vs Programs](/windows-internals/processes-vs-programs/) first.
 
 ## The PEB and ImageBaseAddress
 
@@ -241,7 +241,7 @@ The next logical question: what if you never called `NtUnmapViewOfSection` at al
 
 Hollowing isn’t stealth. It’s inconsistency. And inconsistency is exactly what defenders learn to hunt.
 
-Below that rung is DLL Hijacking — exploiting the loader’s own search-order behavior to make Windows load your code as a legitimate library, without touching an existing process at all. A design decision baked into the Windows loader since the early 1990s that still can’t be fully patched without breaking legacy application compatibility.
+Below that rung is [DLL Hijacking](/windows-internals/dll-hijacking/) — exploiting the loader’s own search-order behavior to make Windows load your code as a legitimate library, without touching an existing process at all. A design decision baked into the Windows loader since the early 1990s that still can’t be fully patched without breaking legacy application compatibility.
 
 That’s next.
 

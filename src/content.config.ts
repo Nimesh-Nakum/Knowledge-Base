@@ -14,6 +14,7 @@ const docSchema = z.object({
 	author: z.string().default('Nimesh Nakum'),
 	difficulty: z.enum(['beginner', 'easy', 'intermediate', 'medium', 'advanced', 'hard', 'insane']).default('intermediate'),
 	draft: z.boolean().default(false),
+	noindex: z.boolean().default(false),
 	readingTime: z.string().optional(),
 	slug: z.string().optional()
 });
@@ -65,6 +66,7 @@ const projects = defineCollection({
 		status: z.enum(['active', 'completed', 'archived']).default('active'),
 		technologies: z.array(z.string()).default([]),
 		draft: z.boolean().default(false),
+		noindex: z.boolean().default(false),
 	}),
 });
 

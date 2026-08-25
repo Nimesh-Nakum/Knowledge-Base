@@ -9,6 +9,7 @@ import FormattedDate from '../components/FormattedDate.astro';
 import TagBadge from '../components/TagBadge.astro';
 import DifficultyBadge from '../components/DifficultyBadge.astro';
 import type { MarkdownHeading } from 'astro';
+import { SITE_URL } from '../consts';
 
 interface Props {
 	title: string;
@@ -24,6 +25,7 @@ interface Props {
 	prevArticle?: { title: string; href: string };
 	nextArticle?: { title: string; href: string };
 	sidebarContent?: any;
+	noindex?: boolean;
 }
 
 const {
@@ -39,10 +41,33 @@ const {
 	breadcrumbs = [],
 	prevArticle,
 	nextArticle,
+	noindex = false,
 } = Astro.props;
+
+// BreadcrumbList JSON-LD — mirrors the visual breadcrumb:
+// Home → [Collection label] → [Article title]
+const breadcrumbSchema = {
+	"@context": "https://schema.org",
+	"@type": "BreadcrumbList",
+	"itemListElement": [
+		{
+			"@type": "ListItem",
+			"position": 1,
+			"name": "Home",
+			"item": SITE_URL
+		},
+		...breadcrumbs.map((crumb, idx) => ({
+			"@type": "ListItem",
+			"position": idx + 2,
+			"name": crumb.label,
+			"item": new URL(crumb.href, Astro.site).href
+		}))
+	]
+};
 ---
 
-<BaseLayout title={title} description={description} type="article" publishedDate={pubDate} modifiedDate={updatedDate} tags={tags} author={author}>
+<BaseLayout title={title} description={description} type="article" publishedDate={pubDate} modifiedDate={updatedDate} tags={tags} author={author} noindex={noindex}>
+	<script slot="head" type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
 	<ReadingProgress />
 	<div class="article-layout">
 		<!-- Left Sidebar -->

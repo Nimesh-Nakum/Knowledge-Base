@@ -2,14 +2,25 @@
 import { getCollection } from 'astro:content';
 import PageLayout from '../../layouts/PageLayout.astro';
 
-const [allSeries, allResearch, allWriteups, allProjects] = await Promise.all([
-	getCollection('series'),
-	getCollection('research'),
-	getCollection('writeups'),
-	getCollection('projects')
-]);
+const collections = [
+	'windows-internals',
+	'active-directory',
+	'windows-security',
+	'web-security',
+	'malware-development',
+	'research',
+	'writeups',
+	'projects',
+];
 
-const allContent = [...allSeries, ...allResearch, ...allWriteups, ...allProjects].filter((p) => !p.data.draft);
+let allContent: any[] = [];
+for (const col of collections) {
+	try {
+		const docs = await getCollection(col as any);
+		const filtered = docs.filter((p: any) => !p.data.draft);
+		allContent.push(...filtered);
+	} catch (e) {}
+}
 
 // Collect all tags with counts
 const tagCounts: Record<string, number> = {};
