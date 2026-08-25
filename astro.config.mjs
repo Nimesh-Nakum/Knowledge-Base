@@ -40,7 +40,6 @@ export default defineConfig({
 					'/windows-security/coming-soon/',
 					'/writeups/coming-soon/',
 					'/research/token-manipulation/',
-					'/projects/reflexionx/',
 					// Exclude the organisational-only tag pages
 					'/tags/placeholder/',
 					'/tags/restricted/',

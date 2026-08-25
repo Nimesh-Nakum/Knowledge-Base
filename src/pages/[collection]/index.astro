@@ -93,7 +93,7 @@ const breadcrumbs = [
 		</div>
 	</div>
 
-	{((docs.length === 0) || (docs.length === 1 && docs[0].id.includes('coming-soon') || docs[0].id.includes('reflexionx') || docs[0].id.includes('token-manipulation'))) ? (
+	{(docs.length === 0 || docs.every((doc: any) => doc.id.includes('coming-soon'))) ? (
 		<div class="coming-soon-wrapper">
 			<h2 class="glitch-title" data-text={`${meta.name.toUpperCase()} COMING SOON`}>
 				{meta.name.toUpperCase()} COMING SOON
