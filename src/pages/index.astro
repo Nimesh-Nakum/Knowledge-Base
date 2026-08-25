@@ -74,13 +74,13 @@ for (const key in collectionGroups) {
 	});
 }
 
+// Sort latest articles newest first
 const latestArticles = allArticles
 	.filter((a) => !a.id.includes('coming-soon') && !a.data.title.includes('Classified') && !a.data.tags?.includes('placeholder'))
-	.sort((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf())
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 9);
 
-console.log('DEBUG_LATEST_ARTICLES_LENGTH:', latestArticles.length);
-console.log('DEBUG_LATEST_ARTICLES_TITLES:', latestArticles.map((a: any) => a.data.title));
+const featuredArticle = allArticles.find((a) => a.id.includes('lsass-deep-dive')) || allArticles[0];
 
 function getArticleHref(article: any) {
 	const slug = article.slug || (article.id ? article.id.split('/').pop().replace(/\.mdx?$/, '') : '');
@@ -141,31 +141,29 @@ function getArticleHref(article: any) {
 		</div>
 	</section>
 
-	<!-- Featured Project -->
-	{reflexionx && (
+	<!-- Featured Research Focus -->
+	{featuredArticle && (
 		<section class="section">
 			<div class="section-inner">
 				<div class="section-header">
-					<h2 class="section-title">Featured Project</h2>
+					<h2 class="section-title">Featured Research Focus</h2>
 				</div>
 				
 				<div class="featured-project-card card-hover-effect">
 					<div class="fp-content">
-						<h3 class="fp-title">{reflexionx.data.title}</h3>
-						<span class="fp-status">STATUS: {reflexionx.data.status?.toUpperCase() || 'ACTIVE'}</span>
-						<p class="fp-desc">{reflexionx.data.description}</p>
+						<h3 class="fp-title">{featuredArticle.data.title}</h3>
+						<span class="fp-status">FLAGSHIP RESEARCH · WINDOWS INTERNALS</span>
+						<p class="fp-desc">{featuredArticle.data.description}</p>
 						
 						<div class="fp-tech">
-							{reflexionx.data.technologies?.map((tech: string) => (
+							{['LSASS', 'Credential Dumping', 'Mimikatz', 'RunAsPPL', 'Credential Guard'].map((tech: string) => (
 								<span class="tech-chip">{tech}</span>
 							))}
 						</div>
 
 						<div class="fp-actions">
-							<a href={`/projects/${reflexionx.id.split('/').pop().replace(/\.mdx?$/, '')}/`} class="btn btn-primary">View Architecture & Documentation</a>
-							{reflexionx.data.github && (
-								<a href={reflexionx.data.github} target="_blank" rel="noopener noreferrer" class="btn btn-outline">GitHub Repository</a>
-							)}
+							<a href={getArticleHref(featuredArticle)} class="btn btn-primary">Read Deep Dive Research</a>
+							<a href="/windows-internals/" class="btn btn-outline">View Full Windows Internals Series</a>
 						</div>
 					</div>
 				</div>

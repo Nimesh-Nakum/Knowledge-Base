@@ -47,7 +47,7 @@ Its key “superpowers” includes:
 *   Writing to Security Logs: LSASS is responsible for generating and writing events to the Windows Security Log, such as successful and failed login attempts.
 *   Memory Isolation (RunAsPPL): On modern Windows, it has the capability to run as a Protected Process Light (PPL). This prevents even other Administrator-level processes from reading its memory or injecting code into it, unless they are also specifically signed and trusted by Microsoft.
 
-## Lsass Internal Architecture and Componants
+## LSASS Internal Architecture and Components
 
 LSASS is not a single tool but a host process for several critical security services and “Security Support Providers” (SSPs) .
 
@@ -106,9 +106,9 @@ Two defenses break the standard Mimikatz flow. They operate at completely differ
 
 Press enter or click to view image in full size
 
-### 1\. PPL
+### 1. Protected Process Light (PPL)
 
-PL is not a firewall rule. It is a protection level field inside `_EPROCESS` — the kernel's process object. When lsass runs as PPL, the kernel refuses to grant `PROCESS_VM_READ` access to any process that isn't also PPL-signed by Microsoft.
+PPL is not a firewall rule. It is a protection level field inside `_EPROCESS` — the kernel's process object. When lsass runs as PPL, the kernel refuses to grant `PROCESS_VM_READ` access to any process that isn't also PPL-signed by Microsoft.
 
 OpenProcess(lsass) with SeDebugPrivilege  
         ↓  
@@ -127,7 +127,7 @@ Bypass: `mimidrv.sys` — Mimikatz's own kernel driver. It directly zeroes the `
 
 This is exactly why [BYOVD](/windows-internals/byovd-explained/) exists as an attack class. PPL cannot be defeated from userland — you need ring 0.
 
-### 2\. Credential Guard — The Hard Wall
+### 2. Credential Guard — The Hard Wall
 
 Credential Guard doesn’t just protect lsass — it moves the credentials out of lsass entirely.
 

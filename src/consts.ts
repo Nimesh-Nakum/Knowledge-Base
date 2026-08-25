@@ -2,7 +2,7 @@
 // You can import this data from anywhere in your site by using the `import` keyword.
 
 export const SITE_TITLE = 'Knowledge Base';
-export const SITE_URL = 'https://nimesh-nakum.security';
+export const SITE_URL = 'https://knowledge-base-cs7.pages.dev';
 export const SITE_DESCRIPTION =
 	'A collection of research, technical articles, and educational series covering Windows Internals, Active Directory, Windows Security, Web Security, and Red Team methodologies.';
 

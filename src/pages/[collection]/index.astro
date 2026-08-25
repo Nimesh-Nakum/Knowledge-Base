@@ -48,6 +48,29 @@ const totalReadingTime = docs.reduce((acc: number, a: any) => {
 	return acc + Math.ceil(words / 200);
 }, 0);
 
+const moduleGroups = collection === 'windows-internals' ? [
+	{
+		name: 'Module 1: Foundations',
+		description: 'Core concepts of Windows architecture, OS design, processes, and threads.',
+		docSlugs: ['introduction', 'processes-vs-programs']
+	},
+	{
+		name: 'Module 2: Windows APIs & Architecture',
+		description: 'Tracing API execution from Win32 through Native API (ntdll) down to SYSCALL.',
+		docSlugs: ['win32-api-vs-native-api']
+	},
+	{
+		name: 'Module 3: Windows Security & Kernel Mechanisms',
+		description: 'LSASS credential architecture, SSPs, PPL, Credential Guard, and BYOVD driver attacks.',
+		docSlugs: ['lsass-deep-dive', 'byovd-explained']
+	},
+	{
+		name: 'Module 4: Process Execution & Injection',
+		description: 'Offensive primitives, memory invariants, Process Hollowing, and DLL Hijacking.',
+		docSlugs: ['process-hollowing', 'dll-hijacking']
+	}
+] : null;
+
 const breadcrumbs = [
 	{ label: meta.name, href: `/${collection}/` }
 ];
@@ -83,6 +106,38 @@ const breadcrumbs = [
 				<div class="cursor-blink">_</div>
 			</div>
 		</div>
+	) : moduleGroups ? (
+		<div class="modules-container">
+			{moduleGroups.map((mod) => {
+				const modDocs = docs.filter((doc: any) => {
+					const slug = doc.id.split('/').pop().replace(/\.mdx?$/, '');
+					return mod.docSlugs.includes(slug);
+				});
+				if (modDocs.length === 0) return null;
+				return (
+					<div class="module-block">
+						<div class="module-header">
+							<h2 class="module-title">{mod.name}</h2>
+							<p class="module-desc">{mod.description}</p>
+						</div>
+						<div class="articles-list stagger">
+							{modDocs.map((doc: any) => (
+								<ArticleCard
+									title={doc.data.title}
+									description={doc.data.description}
+									href={`/${collection}/${doc.id.split('/').pop()}/`}
+									pubDate={doc.data.pubDate}
+									tags={doc.data.tags}
+									readingTime={getReadingTime(doc.body || '')}
+									difficulty={doc.data.difficulty}
+									order={doc.data.order}
+								/>
+							))}
+						</div>
+					</div>
+				);
+			})}
+		</div>
 	) : (
 		<div class="articles-list stagger">
 			{docs.filter((doc: any) => !doc.id.includes('coming-soon')).map((doc: any) => (
@@ -102,6 +157,37 @@ const breadcrumbs = [
 </PageLayout>
 
 <style>
+	.modules-container {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-3xl);
+	}
+
+	.module-block {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-md);
+	}
+
+	.module-header {
+		margin-bottom: var(--space-xs);
+		border-left: 2px solid var(--accent);
+		padding-left: var(--space-md);
+	}
+
+	.module-title {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: var(--text);
+		margin-bottom: 0.25rem;
+	}
+
+	.module-desc {
+		font-size: 0.9375rem;
+		color: var(--text-dim);
+		margin: 0;
+	}
+
 	.series-header {
 		margin-bottom: var(--space-2xl);
 		padding-bottom: var(--space-xl);
